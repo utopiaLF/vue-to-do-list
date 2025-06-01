@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Tutorial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <style>
+        *{
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body{
+            background-color: #212121;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 30px;
+        }
+        input{
+            width: 400px;
+            height: 50px;
+            outline: none;
+            border: 2px solid #ffffff;
+            background-color: #121212;
+            padding: 10px;
+            color: #ffffff;
+            border-radius: 15px;
+            font-family: 'Poppins', sans-serif;
+        }
+        p{
+            font-family: sans-serif;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+        .done{
+            background-color: #58bc82;
+        }
+        ul{
+            font-family: 'Poppins', sans-serif;
+            list-style-type: none;
+        }
+        ul li{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #121212;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            animation: fade 0.5s linear;
+            transition: all 0.2s;
+        }
+        @keyframes fade{
+            from{
+                opacity: 0;
+            }
+            to{
+                opacity: 1;
+            }
+        }
+        button{
+            width: 100px;
+            height: 35px;
+            background-color: brown;
+            color: #ffffff;
+            outline: none;
+            border: none;
+            border-radius: 15px;
+        }
+        .doneBtn{
+            background-color: #ffffff;
+            color: #121212;
+            margin-right: 10px;
+        }
+        .addBtn{
+            background-color: #ffffff;
+            color: #121212;
+            height: 47px;
+            margin-left: 10px;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        .addBtn.active{
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <input v-model.trim="message" @keyup.enter="addItem" type="text" placeholder="Something...">
+        <button class="addBtn" :class="{ active: message}" @click="addItem">Add</button>
+        <p style="color: grey;">Press "Enter" to add to list</p>
+
+        <br>
+
+        <p>Total: {{ total }} | Done: {{ done }}</p>
+
+        <ul>
+            <li v-for="(item, index) in items" :key="index" :class="{ done: item.done}">{{ item.text }} <span><button v-show="!item.done" @click="toggleDone(index)" class="doneBtn">Done</button> <button @click="removeItem(index)">Delete</button></span></li>
+        </ul>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    message: '',
+                    items: []
+                }
+            },
+            methods: {
+                addItem() {
+                    const text = this.message;
+                    if(text) {
+                        this.items.push({ text, done: false});
+                        this.message = ''
+                    }
+                },
+                removeItem(index) {
+                    this.items.splice(index, 1);
+                },
+                toggleDone(index) {
+                    this.items[index].done = !this.items[index].done;
+                }
+            },
+            computed: {
+                total() {
+                    return this.items.length;
+                },
+                done() {
+                    return this.items.filter(item => item.done).length;
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
