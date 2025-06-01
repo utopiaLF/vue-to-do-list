@@ -1,0 +1,1 @@
+This is a small project built with [Vue 3](https://vuejs.org/) to practice the basics of Vue such as reactive data, computed properties, event handling, and dynamic classes.
