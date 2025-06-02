@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vue Tutorial</title>
+    <title>Vue To-do list</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     
@@ -81,18 +81,41 @@
             color: #121212;
             height: 47px;
             margin-left: 10px;
-            opacity: 0;
+            opacity: 0.2;
             transition: all 0.2s;
         }
         .addBtn.active{
             opacity: 1;
         }
+        @media (max-width: 768px) {
+            div{
+                width: 100%;
+                height: max-content;
+                padding: 0px 10px;
+            }
+            input{
+                width: 70%;
+            }
+            .addBtn{
+                width: 25%;
+            }
+            ul li{
+                display: flex;
+                flex-direction: column;
+            }
+            ul li span{
+                margin-top: 10px;
+            }
+            button{
+                height: 35px;
+            }
+        }
     </style>
 </head>
 <body>
     <div id="app">
-        <input v-model.trim="message" @keyup.enter="addItem" type="text" placeholder="Something...">
-        <button class="addBtn" :class="{ active: message}" @click="addItem">Add</button>
+        <input v-model="message" @keyup.enter="addItem" type="text" placeholder="Something...">
+        <button class="addBtn" :class="{ active: message}" @click="addItem" :disabled="!message">Add</button>
         <p style="color: grey;">Press "Enter" to add to list</p>
 
         <br>
@@ -116,7 +139,7 @@
             },
             methods: {
                 addItem() {
-                    const text = this.message;
+                    const text = this.message.trim();
                     if(text) {
                         this.items.push({ text, done: false});
                         this.message = ''
