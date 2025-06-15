@@ -87,6 +87,25 @@
         .addBtn.active{
             opacity: 1;
         }
+        .filterBox{
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+        }
+        .filterBox button{
+            width: 40%;
+            background-color: #ffffff;
+            color: #121212;
+            height: 47px;
+            margin-left: 10px;
+            opacity: 0.2;
+            transition: all 0.2s;
+        }
+        .filterBox button.active{
+            opacity: 1;
+        }
+
         @media (max-width: 768px) {
             div{
                 width: 100%;
@@ -116,14 +135,19 @@
     <div id="app">
         <input v-model="message" @keyup.enter="addItem" type="text" placeholder="Something...">
         <button class="addBtn" :class="{ active: message}" @click="addItem" :disabled="!message">Add</button>
-        <p style="color: grey;">Press "Enter" to add to list</p>
+        <p style="color: grey;">Type something and press "Enter"</p>
 
+        <div class="filterBox">
+            <button class="filterBtn" :class="{ active: !showOnlyDone}" @click="showOnlyDone = false">Show All</button>
+            <button class="filterBtn" :class="{ active: showOnlyDone}" @click="showOnlyDone = !showOnlyDone">Show Done</button>
+        </div>
         <br>
 
         <p>Total: {{ total }} | Done: {{ done }}</p>
 
+
         <ul>
-            <li v-for="(item, index) in items" :key="index" :class="{ done: item.done}">{{ item.text }} <span><button v-show="!item.done" @click="toggleDone(index)" class="doneBtn">Done</button> <button @click="removeItem(index)">Delete</button></span></li>
+            <li v-for="(item, index) in filteredItems" :key="index" :class="{ done: item.done}">{{ item.text }} <span><button v-show="!item.done" @click="toggleDone(index)" class="doneBtn">Done</button> <button @click="removeItem(index)">Delete</button></span></li>
         </ul>
     </div>
 
@@ -134,22 +158,26 @@
             data() {
                 return {
                     message: '',
-                    items: []
+                    items: [],
+                    showOnlyDone: false
                 }
             },
             methods: {
                 addItem() {
                     const text = this.message.trim();
                     if(text) {
-                        this.items.push({ text, done: false});
+                        this.items.push({ text, done: false });
                         this.message = ''
+                        localStorage.setItem('savedList', JSON.stringify(this.items));
                     }
                 },
                 removeItem(index) {
                     this.items.splice(index, 1);
+                    localStorage.setItem('savedList', JSON.stringify(this.items));
                 },
                 toggleDone(index) {
                     this.items[index].done = !this.items[index].done;
+                    localStorage.setItem('savedList', JSON.stringify(this.items));
                 }
             },
             computed: {
@@ -158,6 +186,29 @@
                 },
                 done() {
                     return this.items.filter(item => item.done).length;
+                },
+                filteredItems() {
+                    if(this.showOnlyDone) {
+                        return this.items.filter(item => item.done);
+                    }
+
+                    return this.items;
+                }
+            },
+            watch: {
+                message(value) {
+                    localStorage.setItem('savedNote', value);
+                }
+            },
+            mounted() {
+                const list = JSON.parse(localStorage.getItem('savedList'));
+                if(Array.isArray(list)) {
+                    this.items = list;
+                }
+
+                const note = localStorage.getItem('savedNote');
+                if(note) {
+                    this.message = note;
                 }
             }
         }).mount('#app');
